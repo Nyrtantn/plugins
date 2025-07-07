@@ -1,1 +1,17 @@
-
+{
+  "sourceName": "AnimeUnity",
+  "iconUrl": "https://github.com/cottonable/Ryu-preservation/blob/2f10226aa087154974a70c1ec78aa83a47daced9/Ryu/Assets.xcassets/Sources/AnimeUnity.imageset/apple-touch-icon.jpg?raw=true",
+  "author": {
+    "name": ".......",
+    "icon": "......."
+  },
+  "version": "1.0.0",
+  "language": "Italian",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://www.animeunity.so/",
+  "searchBaseUrl": "https://www.animeunity.so/archivio?title=",
+  "scriptUrl": "path/to/animeunity.js",
+  "asyncJS": true,
+  "type": "anime"
+}
