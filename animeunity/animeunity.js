@@ -1,4 +1,4 @@
-async function searchResults(keyword) {
+async function search(keyword) {
   const response = await fetchv2(
     `https://www.animeunity.so/archivio?title=${keyword}`
   );
@@ -23,7 +23,7 @@ async function searchResults(keyword) {
   return JSON.stringify(results);
 }
 
-async function extractDetails(url) {
+async function fetchInfo(url) {
   const response = await fetchv2(url);
   const json = JSON.parse(await response.text());
 
@@ -36,7 +36,7 @@ async function extractDetails(url) {
   ]);
 }
 
-async function extractEpisodes(url, page = 1) {
+async function fetchEpisodes(url, page = 1) {
   const episodesPerPage = 120;
   const lastPageEpisode = page * episodesPerPage;
   const firstPageEpisode = lastPageEpisode - (episodesPerPage - 1);
@@ -57,7 +57,7 @@ async function extractEpisodes(url, page = 1) {
   return JSON.stringify(results);
 }
 
-async function extractStreamUrl(url) {
+async function fetchSources(url) {
   const response = await fetchv2(url);
   const html = await response.text();
 
