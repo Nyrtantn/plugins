@@ -90,3 +90,10 @@ async function fetchSources(url) {
 
   return null;
 }
+
+return {
+  search,
+  fetchInfo,
+  fetchEpisodes,
+  fetchSources,
+};
