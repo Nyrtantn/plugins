@@ -2,7 +2,7 @@
   "name": "AnimeUnity",
   "compatible": true,
   "pluginType": "provider",
-  "pluginProvider": "Nyrtantn",
+  "pluginProvider": "Standard",
   "contentProvider": "AnimeUnity",
   "scriptUrl": "https://raw.githubusercontent.com/Nyrtantn/plugins/refs/heads/main/animeunity/animeunity.js",
   "iconUrl": "https://github.com/cottonable/Ryu-preservation/blob/2f10226aa087154974a70c1ec78aa83a47daced9/Ryu/Assets.xcassets/Sources/AnimeUnity.imageset/apple-touch-icon.jpg?raw=true",
