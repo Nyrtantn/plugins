@@ -14,7 +14,7 @@ async function search(query) {
   const items = JSON.parse(match[1].replaceAll(`&quot;`, `"`));
 
   const results =
-    items.map((item) => ({  
+    items.map((item) => ({
       title: item.title ?? item.title_eng,
       image: item.imageurl,
       href: `https://www.animeunity.so/info_api/${item.id}`,

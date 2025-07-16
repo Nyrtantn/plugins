@@ -83,3 +83,10 @@ async function fetchSources(href) {
   results.headers = HEADERS;
   return JSON.stringify(results);
 }
+
+return {
+  search,
+  fetchInfo,
+  fetchEpisodes,
+  fetchSources,
+};
