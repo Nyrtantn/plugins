@@ -18,7 +18,7 @@ async function search(query) {
       id: i.id,
       title: i.title?.english || i.title?.romaji || "Unknown title",
       image: i.coverImage?.large || i.coverImage?.medium,
-      href: `${BASE_URL}/anime/${i.id}`,
+      url: `${BASE_URL}/anime/${i.id}`,
     });
   });
 
@@ -51,7 +51,7 @@ async function fetchEpisodes(id) {
 
   episodes.episodes.map((e) => {
     results.push({
-      href: `?provider=${SCRAPED_PROVIDER}&id=${id}&num=${e.number}&subType=sub&watchId=${e.id}&dub_id=null`,
+      id: `?provider=${SCRAPED_PROVIDER}&id=${id}&num=${e.number}&subType=sub&watchId=${e.id}&dub_id=null`,
       number: e.number,
     });
   });
@@ -59,9 +59,9 @@ async function fetchEpisodes(id) {
   return JSON.stringify(results);
 }
 
-async function fetchSources(href) {
+async function fetchSources(id) {
   const response = await fetch(
-    `https://backend.animetsu.to/api/anime/tiddies${href}`,
+    `https://backend.animetsu.to/api/anime/tiddies${id}`,
     {
       headers: HEADERS,
     }

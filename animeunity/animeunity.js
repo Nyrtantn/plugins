@@ -15,9 +15,10 @@ async function search(query) {
 
   const results =
     items.map((item) => ({
+      id: item.id,
       title: item.title ?? item.title_eng,
       image: item.imageurl,
-      href: `https://www.animeunity.so/info_api/${item.id}`,
+      url: `https://www.animeunity.so/info_api/${item.id}`,
     })) || [];
 
   return JSON.stringify(results);
@@ -35,10 +36,11 @@ async function fetchInfo(url) {
   ]);
 }
 
-async function fetchEpisodes(url, page = 1) {
+async function fetchEpisodes(id, page = 1) {
   const episodesPerPage = 120;
   const lastPageEpisode = page * episodesPerPage;
   const firstPageEpisode = lastPageEpisode - (episodesPerPage - 1);
+  const url = `https://www.animeunity.so/info_api/${id}`;
   const uurl = `${url}/1?start_range=${firstPageEpisode}&end_range=${lastPageEpisode}`;
 
   const response = await fetch(uurl);
@@ -49,14 +51,15 @@ async function fetchEpisodes(url, page = 1) {
 
   const results =
     json.episodes.map((e) => ({
-      href: `https://www.animeunity.so/anime/${json2.id}-${json2.slug}/${e.id}`,
+      id: `${json2.id}-${json2.slug}/${e.id}`,
       number: e.number,
     })) || [];
 
   return JSON.stringify(results);
 }
 
-async function fetchSources(url) {
+async function fetchSources(id) {
+  const url = `https://www.animeunity.so/anime/${id}`;
   const response = await fetch(url);
   const html = await response.text();
 
