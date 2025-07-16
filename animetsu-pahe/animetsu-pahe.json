@@ -1,0 +1,19 @@
+{
+  "name": "Animetsu - Pahe",
+  "compatible": true,
+  "pluginType": "provider",
+  "pluginProvider": "Standard",
+  "contentProvider": "AnimetsuPahe",
+  "scriptUrl": "https://raw.githubusercontent.com/Nyrtantn/plugins/refs/heads/main/animetsu-pahe/animetsu-pahe.js",
+  "iconUrl": "https://animetsu.to/android-chrome-192x192.png",
+  "author": {
+    "name": "Nyrtantn",
+    "icon": "https://avatars.githubusercontent.com/u/210676955"
+  },
+  "version": "1.0.0",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://animetsu.to",
+  "type": "anime"
+}

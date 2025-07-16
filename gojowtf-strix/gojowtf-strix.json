@@ -1,0 +1,19 @@
+{
+  "name": "GojoWTF - Strix",
+  "compatible": true,
+  "pluginType": "provider",
+  "pluginProvider": "Standard",
+  "contentProvider": "GojoWTFStrix",
+  "scriptUrl": "https://raw.githubusercontent.com/Nyrtantn/plugins/refs/heads/main/gojowtf-strix/gojowtf-strix.js",
+  "iconUrl": "https://gojo.live/android-chrome-192x192.png",
+  "author": {
+    "name": "Nyrtantn",
+    "icon": "https://avatars.githubusercontent.com/u/210676955"
+  },
+  "version": "1.0.0",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://gojo.live",
+  "type": "anime"
+}

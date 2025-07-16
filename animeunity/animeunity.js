@@ -1,6 +1,6 @@
-async function search(keyword) {
-  const response = await fetchv2(
-    `https://www.animeunity.so/archivio?title=${keyword}`
+async function search(query) {
+  const response = await fetch(
+    `https://www.animeunity.so/archivio?title=${query}`
   );
   const html = await response.text();
 
@@ -14,7 +14,7 @@ async function search(keyword) {
   const items = JSON.parse(match[1].replaceAll(`&quot;`, `"`));
 
   const results =
-    items.map((item) => ({
+    items.map((item) => ({  
       title: item.title ?? item.title_eng,
       image: item.imageurl,
       href: `https://www.animeunity.so/info_api/${item.id}`,
@@ -24,13 +24,12 @@ async function search(keyword) {
 }
 
 async function fetchInfo(url) {
-  const response = await fetchv2(url);
+  const response = await fetch(url);
   const json = JSON.parse(await response.text());
 
   return JSON.stringify([
     {
       description: json.plot,
-      aliases: "N/A",
       airdate: json.date,
     },
   ]);
@@ -42,10 +41,10 @@ async function fetchEpisodes(url, page = 1) {
   const firstPageEpisode = lastPageEpisode - (episodesPerPage - 1);
   const uurl = `${url}/1?start_range=${firstPageEpisode}&end_range=${lastPageEpisode}`;
 
-  const response = await fetchv2(uurl);
+  const response = await fetch(uurl);
   const json = JSON.parse(await response.text());
 
-  const response2 = await fetchv2(url);
+  const response2 = await fetch(url);
   const json2 = JSON.parse(await response2.text());
 
   const results =
@@ -58,7 +57,7 @@ async function fetchEpisodes(url, page = 1) {
 }
 
 async function fetchSources(url) {
-  const response = await fetchv2(url);
+  const response = await fetch(url);
   const html = await response.text();
 
   const regex = /<video-player[^>]*embed_url="([^"]+)"/;
@@ -66,7 +65,7 @@ async function fetchSources(url) {
   const embedUrl = match ? match[1].replaceAll(`&amp;`, "&") : "";
 
   if (embedUrl) {
-    const response = await fetchv2(embedUrl);
+    const response = await fetch(embedUrl);
     const html = await response.text();
 
     const scriptRegex =
