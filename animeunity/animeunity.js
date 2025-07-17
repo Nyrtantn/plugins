@@ -94,7 +94,7 @@ async function fetchSources(id) {
       streamUrl.searchParams.append("expires", expires);
       streamUrl.searchParams.append("h", "1");
 
-      return {
+      return JSON.stringify({
         sources: [
           {
             url: streamUrl.href,
@@ -104,7 +104,7 @@ async function fetchSources(id) {
             runtime: video?.duration ?? undefined,
           },
         ],
-      };
+      });
     }
   }
 
