@@ -65,29 +65,47 @@ async function fetchSources(id) {
 
   const regex = /<video-player[^>]*embed_url="([^"]+)"/;
   const match = regex.exec(html);
-  const embedUrl = match ? match[1].replaceAll(`&amp;`, "&") : "";
+  const embedUrl = match ? match[1].replaceAll("&amp;", "&") : "";
 
   if (embedUrl) {
     const response = await fetch(embedUrl);
     const html = await response.text();
 
     const scriptRegex =
-      /<script[^>]*>([\s\S]*?window\.video[\s\S]*?)<\/script>/;
+      /<script[^>]*>([\s\S]*?window\.video\s*=\s*(\{[\s\S]*?\}));/;
     const scriptMatch = scriptRegex.exec(html);
-    const scriptContent = scriptMatch ? scriptMatch[1] : "";
+    const videoJsonStr = scriptMatch ? scriptMatch[2] : "";
 
-    const domain = /url: '([^']+)'/.exec(scriptContent)[1];
-    const token = /token': '([^']+)'/.exec(scriptContent)[1];
-    const expires = /expires': '([^']+)'/.exec(scriptContent)[1];
+    let video;
+    if (videoJsonStr) {
+      try {
+        video = JSON.parse(videoJsonStr);
+      } catch (err) {}
+    }
 
-    let streamUrl = new URL(domain);
+    const domain = /url:\s*'([^']+)'/.exec(html)?.[1];
+    const token = /token['"]?\s*:\s*'([^']+)'/.exec(html)?.[1];
+    const expires = /expires['"]?\s*:\s*'([^']+)'/.exec(html)?.[1];
 
-    streamUrl.searchParams.append("token", token);
-    streamUrl.searchParams.append("referer", "");
-    streamUrl.searchParams.append("expires", expires);
-    streamUrl.searchParams.append("h", "1");
+    if (domain && token && expires) {
+      let streamUrl = new URL(domain);
+      streamUrl.searchParams.append("token", token);
+      streamUrl.searchParams.append("referer", "");
+      streamUrl.searchParams.append("expires", expires);
+      streamUrl.searchParams.append("h", "1");
 
-    return streamUrl.href;
+      return {
+        sources: [
+          {
+            url: streamUrl.href,
+            quality: video?.quality ? `${video.quality}p` : "default",
+            isM3U8: true,
+            size: video?.size ?? undefined,
+            runtime: video?.duration ?? undefined,
+          },
+        ],
+      };
+    }
   }
 
   return null;
