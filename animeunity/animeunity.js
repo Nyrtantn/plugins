@@ -52,12 +52,11 @@ async function fetchEpisodes(id, page = 1) {
   const results =
     json.episodes.map((e) => ({
       id: `${json2.id}-${json2.slug}/${e.id}`,
-      number: e.number,
+      number: Number(e.number),
     })) || [];
 
   return JSON.stringify(results);
 }
-
 async function fetchSources(id) {
   const url = `https://www.animeunity.so/anime/${id}`;
   const response = await fetch(url);
@@ -67,48 +66,75 @@ async function fetchSources(id) {
   const match = regex.exec(html);
   const embedUrl = match ? match[1].replaceAll("&amp;", "&") : "";
 
-  if (embedUrl) {
-    const response = await fetch(embedUrl);
-    const html = await response.text();
+  if (!embedUrl) return null;
 
-    const scriptRegex =
-      /<script[^>]*>([\s\S]*?window\.video\s*=\s*(\{[\s\S]*?\}));/;
-    const scriptMatch = scriptRegex.exec(html);
-    const videoJsonStr = scriptMatch ? scriptMatch[2] : "";
+  const embedResponse = await fetch(embedUrl);
+  const embedHtml = await embedResponse.text();
 
-    let video;
-    if (videoJsonStr) {
-      try {
-        video = JSON.parse(videoJsonStr);
-      } catch (err) {}
-    }
+  const scriptRegex =
+    /<script[^>]*>([\s\S]*?window\.video\s*=\s*(\{[\s\S]*?\}));/;
+  const scriptMatch = scriptRegex.exec(embedHtml);
+  const videoJsonStr = scriptMatch ? scriptMatch[2] : "";
 
-    const domain = /url:\s*'([^']+)'/.exec(html)?.[1];
-    const token = /token['"]?\s*:\s*'([^']+)'/.exec(html)?.[1];
-    const expires = /expires['"]?\s*:\s*'([^']+)'/.exec(html)?.[1];
-
-    if (domain && token && expires) {
-      let streamUrl = new URL(domain);
-      streamUrl.searchParams.append("token", token);
-      streamUrl.searchParams.append("referer", "");
-      streamUrl.searchParams.append("expires", expires);
-      streamUrl.searchParams.append("h", "1");
-
-      return JSON.stringify({
-        sources: [
-          {
-            url: streamUrl.href,
-            quality: video?.quality ? `${video.quality}p` : "default",
-            isM3U8: true,
-            size: video?.size ?? undefined,
-            runtime: video?.duration ?? undefined,
-          },
-        ],
-      });
+  let video;
+  if (videoJsonStr) {
+    try {
+      video = JSON.parse(videoJsonStr);
+    } catch (err) {
+      video = null;
     }
   }
 
-  return null;
+  const domain = /url:\s*'([^']+)'/.exec(embedHtml)?.[1];
+  const token = /token['"]?\s*:\s*'([^']+)'/.exec(embedHtml)?.[1];
+  const expires = /expires['"]?\s*:\s*'([^']+)'/.exec(embedHtml)?.[1];
+
+  if (!domain || !token || !expires) return null;
+
+  const streamUrl = new URL(domain);
+  streamUrl.searchParams.append("token", token);
+  streamUrl.searchParams.append("referer", "");
+  streamUrl.searchParams.append("expires", expires);
+  streamUrl.searchParams.append("h", "1");
+
+  const playlistResponse = await fetch(streamUrl.href);
+  const playlistText = await playlistResponse.text();
+
+  const qualityRegex =
+    /#EXT-X-STREAM-INF:.*?RESOLUTION=\d+x(\d+).*?\n([^\n]+)/g;
+
+  const qualities = [];
+  let matchQuality;
+  while ((matchQuality = qualityRegex.exec(playlistText)) !== null) {
+    const height = matchQuality[1];
+    const streamPath = matchQuality[2];
+    const absoluteUrl = new URL(streamPath, streamUrl.href).href;
+
+    qualities.push({
+      quality: `${height}p`,
+      url: absoluteUrl,
+    });
+  }
+
+  // fallback with only default quality
+  if (qualities.length === 0) {
+    qualities.push({
+      quality: video?.quality ? `${video.quality}p` : "default",
+      url: streamUrl.href,
+      metadata: {
+        size: video?.size,
+        runtime: video?.duration,
+      },
+    });
+  }
+
+  const source = {
+    label: "AnimeUnity",
+    type: "hls",
+    qualities,
+  };
+
+  return JSON.stringify([source]);
 }
 
 return {

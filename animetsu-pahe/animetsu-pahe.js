@@ -66,22 +66,23 @@ async function fetchSources(id) {
       headers: HEADERS,
     }
   );
+
   const json = await response.json();
+  if (!json.sources || !Array.isArray(json.sources)) return [];
 
-  results = {};
-  results.sources = [];
+  const qualities = json.sources.map((s) => ({
+    quality: s.quality || "default",
+    url: s.url,
+    headers: HEADERS,
+  }));
 
-  if (!json.sources) return [];
-
-  json.sources.map((s) => {
-    results.sources.push({
-      url: s.url,
-      quality: s.quality,
-    });
-  });
-
-  results.headers = HEADERS;
-  return JSON.stringify(results);
+  return JSON.stringify([
+    {
+      label: `Animetsu ${SCRAPED_PROVIDER.toUpperCase()}`,
+      type: "hls",
+      qualities,
+    },
+  ]);
 }
 
 return {
